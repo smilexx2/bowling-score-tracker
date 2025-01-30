@@ -170,12 +170,11 @@ const FrameInputs = ({
             frame.rolls[1] = value;
           }
         } else {
-          // After a non-strike, allow a spare or valid number that doesn't exceed 10
+          // After a non-strike, check for spare or valid number
           const firstRoll = parseInt(frame.rolls[0]);
-          if (
-            value === "/" ||
-            (!isNaN(firstRoll) && firstRoll + parseInt(value) <= 10)
-          ) {
+          if (value === "/" || firstRoll + parseInt(value) === 10) {
+            frame.rolls[1] = "/";
+          } else if (!isNaN(firstRoll) && firstRoll + parseInt(value) < 10) {
             frame.rolls[1] = value;
           }
         }
@@ -203,10 +202,10 @@ const FrameInputs = ({
         }
       } else if (rollIndex === 1) {
         const firstRoll = parseInt(frame.rolls[0]);
-        if (
-          value === "/" ||
-          (!isNaN(firstRoll) && firstRoll + parseInt(value) <= 10)
-        ) {
+        if (value === "/" || firstRoll + parseInt(value) === 10) {
+          frame.rolls[1] = "/";
+          frame.isComplete = true;
+        } else if (!isNaN(firstRoll) && firstRoll + parseInt(value) < 10) {
           frame.rolls[1] = value;
           frame.isComplete = true;
         }
