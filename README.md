@@ -81,32 +81,7 @@ npm run dev
    - Final score is displayed at the end of the game
    - Winner is announced when all players complete their games
 
-## Development
-
-### Project Structure
-
-```
-bowling-score-tracker/
-├── src/
-│   ├── components/
-│   │   ├── ui/
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   └── input.tsx
-│   │   └── BowlingScoreTracker.tsx
-│   ├── lib/
-│   │   └── utils.ts
-│   ├── App.tsx
-│   ├── index.css
-│   └── main.tsx
-├── components.json
-├── tailwind.config.js
-├── tsconfig.json
-└── vite.config.ts
-```
-
 ### Key Components
 
 - `BowlingScoreTracker`: Main component handling game logic and UI
 - `FrameInputs`: Represents a single bowling frame with rolls and score
-- `Player`: Manages player data including name and frames
