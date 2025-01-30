@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { GameState, Player } from "@/types";
 
@@ -92,6 +93,19 @@ const FrameInputs = ({
   gameState,
   setGameState,
 }: FrameInputsProps) => {
+  const activeInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus the active input when it changes
+  useEffect(() => {
+    if (activeInputRef.current) {
+      activeInputRef.current.focus();
+    }
+  }, [
+    gameState.currentPlayerIndex,
+    gameState.currentFrameIndex,
+    gameState.currentRollIndex,
+  ]);
+
   const advanceGame = () => {
     const { currentPlayerIndex, currentFrameIndex, currentRollIndex } =
       gameState;
@@ -242,6 +256,9 @@ const FrameInputs = ({
           }
           maxLength={1}
           disabled={!isActiveInput(playerIndex, frameIndex, 0)}
+          ref={
+            isActiveInput(playerIndex, frameIndex, 0) ? activeInputRef : null
+          }
         />
         {(frameIndex === 9 || frame.rolls[0] !== "X") && (
           <Input
@@ -255,6 +272,9 @@ const FrameInputs = ({
             }
             maxLength={1}
             disabled={!isActiveInput(playerIndex, frameIndex, 1)}
+            ref={
+              isActiveInput(playerIndex, frameIndex, 1) ? activeInputRef : null
+            }
           />
         )}
         {frameIndex === 9 &&
@@ -272,6 +292,11 @@ const FrameInputs = ({
               }
               maxLength={1}
               disabled={!isActiveInput(playerIndex, frameIndex, 2)}
+              ref={
+                isActiveInput(playerIndex, frameIndex, 2)
+                  ? activeInputRef
+                  : null
+              }
             />
           )}
       </div>
