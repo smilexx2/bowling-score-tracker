@@ -1,50 +1,112 @@
-# React + TypeScript + Vite
+# Bowling Score Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React-based bowling score tracking application that allows multiple players to track their bowling scores in real-time. The application follows standard bowling rules and provides an intuitive interface for score input and calculation.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Support for up to 5 players
+- Real-time score calculation
+- Handles strikes (X), spares (/), and open frames
+- Special 10th frame rules with bonus rolls
+- Turn-based input system
+- Responsive design
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui components
 
-- Configure the top-level `parserOptions` property like this:
+## Installation
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+1. Clone the repository:
+
+```bash
+git clone https://github.com/smilexx2/bowling-score-tracker.git
+cd bowling-score-tracker
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+2. Install dependencies:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```bash
+npm install
 ```
+
+3. Run the development server:
+
+```bash
+npm run dev
+```
+
+## Bowling Rules
+
+1. **Basic Scoring**
+
+   - Each game consists of 10 frames
+   - Each frame allows up to two rolls to knock down all pins
+   - Each pin knocked down counts as one point
+
+2. **Special Scoring**
+
+   - **Strike (X)**: Knocking down all 10 pins on the first roll
+     - Score: 10 points plus the points from your next two rolls
+   - **Spare (/)**: Knocking down all remaining pins on the second roll
+     - Score: 10 points plus the points from your next roll
+   - **Open Frame**: Not knocking down all pins in two rolls
+     - Score: Total number of pins knocked down
+
+3. **10th Frame Special Rules**
+   - If you roll a strike, you get two more rolls
+   - If you roll a spare, you get one more roll
+   - Maximum score possible is 300 (12 strikes in a row)
+
+## Usage
+
+1. **Starting a Game**
+
+   - Enter player names (1-5 players)
+   - Click "Start Game" to begin
+
+2. **Playing the Game**
+
+   - Enter scores sequentially for each frame
+   - Use 'X' for strikes and '/' for spares
+   - Numbers 0-9 for regular rolls
+   - The active input field is highlighted
+
+3. **Score Display**
+   - Running total is shown for each frame
+   - Final score is displayed at the end of the game
+   - Winner is announced when all players complete their games
+
+## Development
+
+### Project Structure
+
+```
+bowling-score-tracker/
+├── src/
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   └── input.tsx
+│   │   └── BowlingScoreTracker.tsx
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── components.json
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Key Components
+
+- `BowlingScoreTracker`: Main component handling game logic and UI
+- `FrameInputs`: Represents a single bowling frame with rolls and score
+- `Player`: Manages player data including name and frames
