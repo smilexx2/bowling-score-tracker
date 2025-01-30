@@ -137,7 +137,7 @@ const BowlingScoreTracker = () => {
                   <h3 className="text-lg font-semibold">{player.name}</h3>
                   <div className="text-lg">Total: {player.totalScore}</div>
                 </div>
-                <div className="grid grid-cols-10 gap-1 w-full min-w-[800px] pb-2">
+                <div className="grid grid-cols-[repeat(9,minmax(0,1fr))_1.5fr] gap-1 w-full min-w-[800px] pb-2">
                   <FrameInputs
                     players={players}
                     playerIndex={playerIndex}
