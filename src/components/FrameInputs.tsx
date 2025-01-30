@@ -224,7 +224,7 @@ const FrameInputs = ({
     setPlayers(newPlayers);
 
     // Advance the game if valid input was entered
-    if (value) {
+    if (frame.rolls[rollIndex] === value || frame.rolls[rollIndex] === "/") {
       if (frameIndex === 9) {
         // In 10th frame, only advance if:
         // 1. Got a strike/spare and completed all three rolls
