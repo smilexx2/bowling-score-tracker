@@ -7,6 +7,7 @@ interface FrameInputsProps {
   playerIndex: number;
   gameState: GameState;
   setGameState: (gameState: GameState) => void;
+  setPlayers: (players: Player[]) => void;
 }
 
 const isValidRoll = (value: string): boolean => {
@@ -92,6 +93,7 @@ const FrameInputs = ({
   playerIndex,
   gameState,
   setGameState,
+  setPlayers,
 }: FrameInputsProps) => {
   const activeInputRef = useRef<HTMLInputElement>(null);
 
@@ -144,59 +146,68 @@ const FrameInputs = ({
     value: string
   ) => {
     // Only allow input for the current active position
-    if (
-      playerIndex !== gameState.currentPlayerIndex ||
-      frameIndex !== gameState.currentFrameIndex ||
-      rollIndex !== gameState.currentRollIndex
-    ) {
-      return;
-    }
+    if (!isActiveInput(playerIndex, frameIndex, rollIndex)) return;
 
     if (!isValidRoll(value)) return;
 
-    const player = players[playerIndex];
+    const newPlayers = [...players];
+    const player = newPlayers[playerIndex];
     const frame = player.frames[frameIndex];
 
     // Handle input validation
-    if (rollIndex === 0) {
-      if (value === "X" && frameIndex !== 9) {
-        frame.rolls = ["X"];
-        frame.isComplete = true;
-      } else if (value === "/" || parseInt(value) > 10) {
-        return;
-      } else {
-        frame.rolls[0] = value;
-      }
-    } else if (rollIndex === 1) {
-      const firstRoll = parseInt(frame.rolls[0]);
-      if (value === "/") {
-        if (frame.rolls[0] === "X") return;
-        frame.rolls[1] = "/";
-        frame.isComplete = true;
-      } else if (
-        value === "X" &&
-        frameIndex === 9 &&
-        (frame.rolls[0] === "X" || frame.rolls[0] === "/")
-      ) {
-        frame.rolls[1] = "X";
-      } else {
-        const secondRoll = parseInt(value);
+    if (frameIndex === 9) {
+      // 10th frame special handling
+      if (rollIndex === 0) {
+        if (value === "X") {
+          frame.rolls[0] = "X";
+        } else if (parseInt(value) <= 10) {
+          frame.rolls[0] = value;
+        }
+      } else if (rollIndex === 1) {
+        if (frame.rolls[0] === "X") {
+          // After a strike, allow another strike or valid number
+          if (value === "X" || parseInt(value) <= 10) {
+            frame.rolls[1] = value;
+          }
+        } else {
+          // After a non-strike, allow a spare or valid number that doesn't exceed 10
+          const firstRoll = parseInt(frame.rolls[0]);
+          if (
+            value === "/" ||
+            (!isNaN(firstRoll) && firstRoll + parseInt(value) <= 10)
+          ) {
+            frame.rolls[1] = value;
+          }
+        }
+      } else if (rollIndex === 2) {
+        // Third roll is allowed if first two rolls include a strike or spare
         if (
-          isNaN(secondRoll) ||
-          (!isNaN(firstRoll) && firstRoll + secondRoll > 10)
-        )
-          return;
-        frame.rolls[1] = value;
-        frame.isComplete = true;
+          frame.rolls[0] === "X" ||
+          frame.rolls[1] === "X" ||
+          frame.rolls[1] === "/"
+        ) {
+          if (value === "X" || parseInt(value) <= 10) {
+            frame.rolls[2] = value;
+            frame.isComplete = true;
+          }
+        }
       }
-    } else if (rollIndex === 2 && frameIndex === 9) {
-      if (
-        frame.rolls[0] === "X" ||
-        frame.rolls[1] === "X" ||
-        frame.rolls[1] === "/"
-      ) {
-        if (value === "X" || (parseInt(value) >= 0 && parseInt(value) <= 10)) {
-          frame.rolls[2] = value;
+    } else {
+      // Normal frames (1-9)
+      if (rollIndex === 0) {
+        if (value === "X") {
+          frame.rolls = ["X"];
+          frame.isComplete = true;
+        } else if (parseInt(value) <= 10) {
+          frame.rolls[0] = value;
+        }
+      } else if (rollIndex === 1) {
+        const firstRoll = parseInt(frame.rolls[0]);
+        if (
+          value === "/" ||
+          (!isNaN(firstRoll) && firstRoll + parseInt(value) <= 10)
+        ) {
+          frame.rolls[1] = value;
           frame.isComplete = true;
         }
       }
@@ -211,9 +222,25 @@ const FrameInputs = ({
     }
     player.totalScore = runningScore;
 
-    // If valid input was entered, advance the game
+    setPlayers(newPlayers);
+
+    // Advance the game if valid input was entered
     if (value) {
-      if ((value === "X" && frameIndex !== 9) || frame.isComplete) {
+      if (frameIndex === 9) {
+        // In 10th frame, only advance if:
+        // 1. Got a strike/spare and completed all three rolls
+        // 2. Got open frame and completed two rolls
+        const needsThirdRoll = frame.rolls[0] === "X" || frame.rolls[1] === "/";
+        if (
+          (needsThirdRoll && frame.rolls[2]) ||
+          (!needsThirdRoll && frame.rolls[1])
+        ) {
+          frame.isComplete = true;
+          advanceGame();
+        } else if (frame.rolls[rollIndex]) {
+          advanceGame();
+        }
+      } else if (value === "X" || frame.isComplete) {
         advanceGame();
       } else if (value !== "") {
         advanceGame();

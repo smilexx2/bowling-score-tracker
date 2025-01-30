@@ -143,6 +143,7 @@ const BowlingScoreTracker = () => {
                     playerIndex={playerIndex}
                     gameState={gameState}
                     setGameState={setGameState}
+                    setPlayers={setPlayers}
                   />
                 </div>
               </div>
